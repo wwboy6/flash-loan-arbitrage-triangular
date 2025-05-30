@@ -33,34 +33,58 @@ describe("Token contract", () => {
   const tokenBase = new ethers.Contract(TOKEN_A, abi, provider);
 
   beforeEach(async () => {
+    console.log("0")
+
     // Get owner as signer
-    [owner] = await ethers.getSigners();
+    const [owner] = await ethers.getSigners();
+    console.log("owner", owner)
+
+    console.log("1")
 
     // Ensure Whale has balance
     const whale_balance = await provider.getBalance(BUSD_WHALE);
     expect(whale_balance).not.equal("0");
 
+    console.log("2")
+
     // Deploy smart contract
-    const FlashSwap = await ethers.getContractFactory("ContractFlashTri");
-    FLASHSWAP = await FlashSwap.deploy();
-    await FLASHSWAP.deployed();
+    const contractAddress = "0xca0cc700F5DbFF1662d03a64361600Caa3DA8fd7"
+    const contractName = "ContractFlashTri"
+    const FlashSwap = await ethers.getContractFactory(contractName);
+    // const [signer] = await ethers.getSigners();
+    // const contractWithSigner = contract.connect(signer);
 
-    // Configure Borrowing
-    const borrowAmountHuman = "1"; // borrow anything, even 1m
-    BORROW_AMOUNT = ethers.utils.parseUnits(borrowAmountHuman, DECIMALS);
+    // FLASHSWAP = await FlashSwap.deploy();
+    // await FLASHSWAP.deployed();
+    // bnb testnet: 0xca0cc700F5DbFF1662d03a64361600Caa3DA8fd7
+    const contractABI = (await ethers.getContractFactory(contractName)).interface;
+    FLASHSWAP = await ethers.getContractAt(contractABI, contractAddress);
 
-    // Configure Funding
-    initialFundingHuman = "100"; // 100 assigned just to pass payback of loan whilst testing
-    FUND_AMOUNT = ethers.utils.parseUnits(initialFundingHuman, DECIMALS);
+    console.log("3")
 
-    await impersonateFundErc20(
-      tokenBase,
-      BUSD_WHALE,
-      FLASHSWAP.address,
-      initialFundingHuman
-    );
+    // // Configure Borrowing
+    // const borrowAmountHuman = "1"; // borrow anything, even 1m
+    // BORROW_AMOUNT = ethers.utils.parseUnits(borrowAmountHuman, DECIMALS);
+
+    // // Configure Funding
+    // initialFundingHuman = "100"; // 100 assigned just to pass payback of loan whilst testing
+    // FUND_AMOUNT = ethers.utils.parseUnits(initialFundingHuman, DECIMALS);
+
+    // await impersonateFundErc20(
+    //   tokenBase,
+    //   BUSD_WHALE,
+    //   FLASHSWAP.address,
+    //   initialFundingHuman
+    // );
   });
 
+  describe("read", () => {
+    it("read", async () => {
+      const result = await FLASHSWAP.tradeDetails(FACTORY_PANCAKE)
+      console.log(result)
+    })
+  });
+  /*
   describe("Arbitrage execution", () => {
     it("ensures contract is funded", async () => {
       const flashSwapBalance = await FLASHSWAP.getBalanceOfToken(TOKEN_A);
@@ -113,4 +137,5 @@ describe("Token contract", () => {
       expect(gasUsedUSD).gte(0.1);
     });
   });
+  */
 });

@@ -41,7 +41,7 @@ contract ContractFlashTri {
     mapping(address => TradeDetails) public tradeDetails;
 
     // FUND SWAP CONTRACT
-    // Provides a runction to allow contract to be funded
+    // Provides a function to allow contract to be funded
     function fundFlashSwapContract(
         address _owner,
         address _token,
